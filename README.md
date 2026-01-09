@@ -74,10 +74,30 @@ Once the terraform completes its execution, following resources are created auto
 - Flink Compute Pool named **Flink_compute_pool**
 
 ## Step : Running the Table API Flink Job 
-In the current working directory, You'll see a folder **flink-table-api-example** with a maven Java TableAPI code.
+In the current working directory, You'll see a folder **flink-table-api-example** with a maven Java TableAPI code with simple Flink transformations. With TableAPI you can write your Flink Jobs either with Java or Python programming languages. This gives more flexibility for teams comfortable with high level languages. So the Java project would require 2 important dependencies in the pom.xml file:
+- **flink-table-api-java** : Open source Flink's Table API package for defining the Flink Jobs
+- **confluent-flink-table-api-java-plugin** : Confluent's Table API java plugin used to interact with Flink compute pool created on Confluent Cloud using REST endpoints.
 
+The Flink Table API code in the **flink-table-api-example** directory has Flink Job which uses sample marketplace mock provided by CC Flink compute pool to perform the following transformations. We will be using `ORDERS` and `PRODUCTS` sample data to:
+
+- Filter `ORDERS` events from a specific range of customer_ids and stored it into `orders_filtered` table backed by a kafka topic.
+- Calculate the total sale of each product within every interval of `1 MINUTE` using `TUMBLE` window and `GROUP BY` operations on the `ORDERS` events and is stored it into `orders_windowed_aggregation` backed by a kafka topic.
+- Perform real-time join of `ORDERS` and `PRODUCTS` events to get an enriched table `orders_product_enriched` table for any downstream consumers to process.
+
+To run the Flink job, Navigate to `flink-table-api-example` directory and run the following commands.
+
+```
+# To create a JAR file
+mvn clean package
+
+# To run the JAR code
+java -jar flink-table-api-java-examples-1.0.jar
+
+```
+
+The above commands will submit the Flink Job to the CC Flink compute pool and you can observe the statements on the compute pool.
 
 ## Teardown Resources
+Once you have completed the setup you can delete all the resources in one go through terraform.
 
-
-
+Navigate to `terraform` directory and run `terraform destroy` command.
