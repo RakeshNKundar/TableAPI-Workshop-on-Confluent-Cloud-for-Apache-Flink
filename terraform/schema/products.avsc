@@ -1,0 +1,30 @@
+{
+        "namespace": "ksql",
+        "name": "product",
+        "type": "record",
+        "fields": [
+                {"name": "id", 
+                "type":{
+                    "type":"string",
+                    "arg.properties":{
+                    "regex":"Item_[1-9][0-9]{0,2}"
+                    }
+                }},
+                {"name": "name", 
+                "type":{
+                    "type":"string",
+                    "arg.properties":{
+                    "regex":"Product_[1-9][0-9]{0,2}"
+                    }
+                }},
+                {"name": "price", 
+                 "type": {
+                    "type": "double",
+                     "arg.properties": {
+                      "iteration": {
+                          "start": 10
+                          }
+                       }
+                  }}
+        ]
+}
