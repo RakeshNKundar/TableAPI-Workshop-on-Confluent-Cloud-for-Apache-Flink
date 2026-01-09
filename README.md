@@ -1,41 +1,65 @@
-# Java Table API Hands on with Confluent Cloud for Apache Flink
+# 🚀 Java Table API Hands-on with Confluent Cloud for Apache Flink
 
-This github repo walks you through the complete setup of running Flink jobs on fully managed Confluent Cloud for Apache Flink using Table API in Java programming language step-by-step from scratch. This repo is focused for people who wants to get started with Flink TableAPI and Confluent's Flink offering. 
+This GitHub repository provides a step-by-step, hands-on guide to running Apache Flink Table API jobs using Java on fully managed Confluent Cloud for Apache Flink.
+
+The workshop is designed for developers and data engineers who want to:
+
+- Get started with Flink Table API
+
+- Understand Confluent Cloud’s managed Flink offering
+
+- Deploy and run Flink jobs using Java with minimal operational overhead
+
+By the end of this guide, you’ll have a complete streaming pipeline running on Confluent Cloud—provisioned automatically using Terraform.
+
+## 📌 What You’ll Learn
+
+- How to provision Confluent Cloud infrastructure using Terraform
+- How to use Apache Flink Table API (Java) for stream processing
+- How to run Flink jobs on a fully managed Flink compute pool
+- How to perform filtering, windowed aggregations, and stream joins
 
 
 
-## Prerequisites
-- Confluent Cloud account(https://confluent.cloud)
-- Terraform
-- Maven
+## ✅ Prerequisites
 
-## High Level Overview
+- [Confluent Cloud account](https://confluent.cloud)
+- [Terraform](https://developer.hashicorp.com/terraform)
+- [Maven](https://maven.apache.org/download.cgi)
+- Java 11 or later
 
-This repo does the following steps 
+## 🏗️ High-Level Architecture
 
-- In terraform script does the following things
-- Creates a Confluent Cloud environment and a Kafka cluster on GCP cloud
-- Spins up a fully managed Confluent Flink compute pool for the Flink jobs to run
+This repository automates and demonstrates the following workflow:
+
+1. Terraform provisions Confluent Cloud resources
+2. A Kafka cluster is created on GCP
+3. A fully managed Flink compute pool is spun up
+4. A Java-based Flink Table API job is deployed and executed
+5. Streaming data is processed using filters, windowed aggregations, and joins
 
 
 ## Setup
+
 Clone this github repository to your working directory. Set the working path to simplify the command executions.
+
 ```
-git clone https://github.com/RakeshNKundar/churn-prediction-with-cc-flink-ai.git ####### 
+git clone https://github.com/RakeshNKundar/TableAPI-Workshop-on-Confluent-Cloud-for-Apache-Flink.git
 
 cd cc-flink-table-api-workshop
-
-export TUTORIAL_PATH=$(pwd)
 ```
 
-## Step : Generate Confluent Cloud API Key.
-This repo uses Confluent's terraform provider to automate the infrastructure setup. Confluent terraform provider requires a special type of API key named **CLOUD_API_KEY** to interact with Confluent for the infrastructure management. Follow the below instructions to generate one.
+## 🔐 Step 1: Generate a Confluent Cloud API Key
 
-- Login to your Confluent Cloud account(https://confluent.cloud)
+This project uses the **Confluent Terraform Provider**, which requires a special **Cloud API Key** to manage infrastructure.
+
+### Steps to Create the API Key
+
+- Login to your [Confluent Cloud account](https://confluent.cloud)
 
 ![CC Home Page](./assets/images/cc_home_page.png)
 
-- Click on the Hamberger icon on the top right of the sreen and select API keys menu
+- Click on the **hamburger menu (☰)** on the top right of the sreen and select **API keys** menu
 
 ![Choose API key menu from the Hamberger icon](./assets/images/hamburger_icon_api_key.png)
 
@@ -43,7 +67,7 @@ This repo uses Confluent's terraform provider to automate the infrastructure set
 
 ![Add API Key button](./assets/images/add_api_key_button.png)
 
-- Select My Account option. **Note:** The user needs to have Organization Admin Role to create this API Key.
+- Select **My Account** option. **Note:** The user needs to have Organization Admin Role to create this API Key.
 
 ![Select My Account option](./assets/images/account_selection_api_key.png)
 
@@ -56,9 +80,9 @@ This repo uses Confluent's terraform provider to automate the infrastructure set
 ![Fill name and secret to the API Key](./assets/images/name_and_description_api_key.png)
 
 
-## Step : Configuring terraform and spinning up CC infrastructure
+## 🧱 Step 2: Provision Confluent Cloud Infrastructure with Terraform
 
-Once the Confluent Cloud API key is generated, Navigate to the terraform directory and run the below commands to run the terraform scripts. Paste the **CC_CLOUD_API_KEY** and **CC_CLOUD_API_SECRET** values when prompted.
+Navigate to the **terraform** directory and run the following commands.
 
 ```
 # Initialize the terraform directory
@@ -68,36 +92,62 @@ terraform init
 terraform apply --auto-approve
 ```
 
+When prompted, enter:
+- **CC_CLOUD_API_KEY**
+- **CC_CLOUD_API_SECRET**
+
 Once the terraform completes its execution, following resources are created automatically.
-- Confluent Environment named **CC_Flink_TableAPI_Workshop**
-- Confluent Kafka Cluster named **Table_API_Workshop_Kafka_Cluster**
-- Flink Compute Pool named **Flink_compute_pool**
+- Confluent Environment named `CC_Flink_TableAPI_Workshop`
+- Confluent Kafka Cluster named `Table_API_Workshop_Kafka_Cluster`
+- Flink Compute Pool named `Flink_compute_pool`
 
-## Step : Running the Table API Flink Job 
-In the current working directory, You'll see a folder **flink-table-api-example** with a maven Java TableAPI code with simple Flink transformations. With TableAPI you can write your Flink Jobs either with Java or Python programming languages. This gives more flexibility for teams comfortable with high level languages. So the Java project would require 2 important dependencies in the pom.xml file:
-- **flink-table-api-java** : Open source Flink's Table API package for defining the Flink Jobs
-- **confluent-flink-table-api-java-plugin** : Confluent's Table API java plugin used to interact with Flink compute pool created on Confluent Cloud using REST endpoints.
+## ▶️ Step 3: Run the Java Flink Table API Job
 
-The Flink Table API code in the **flink-table-api-example** directory has Flink Job which uses sample marketplace mock provided by CC Flink compute pool to perform the following transformations. We will be using `ORDERS` and `PRODUCTS` sample data to:
+The directory **flink-table-api-example** contains a Maven-based Java project that uses Flink Table API.
 
-- Filter `ORDERS` events from a specific range of customer_ids and stored it into `orders_filtered` table backed by a kafka topic.
-- Calculate the total sale of each product within every interval of `1 MINUTE` using `TUMBLE` window and `GROUP BY` operations on the `ORDERS` events and is stored it into `orders_windowed_aggregation` backed by a kafka topic.
-- Perform real-time join of `ORDERS` and `PRODUCTS` events to get an enriched table `orders_product_enriched` table for any downstream consumers to process.
+### Key Dependencies
+- `flink-table-api-java` : Open source Flink's Table API package for defining the Flink Jobs
+- `confluent-flink-table-api-java-plugin` : Confluent's Table API java plugin used to interact with Flink compute pool created on Confluent Cloud using REST endpoints.
 
-To run the Flink job, Navigate to `flink-table-api-example` directory and run the following commands.
+### What the Flink Job Does
+Using sample `marketplace` data provided by Confluent Cloud, the job:
 
+1. Filters orders
+
+    - Selects `ORDERS` events for a specific range of `customer_id`
+    - Writes results to `orders_filtered` (Kafka-backed table)
+
+2. Performs windowed aggregations
+
+    - Calculates total sales per product
+    - Uses a `1-MINUTE` **TUMBLE** window
+    - Writes results to `orders_windowed_aggregation`
+
+3. Enriches data via stream joins
+
+    - Joins `ORDERS` with `PRODUCTS`
+    - Produces `orders_product_enriched` table for downstream consumers
+
+### Build and Run the Job
 ```
-# To create a JAR file
+cd flink-table-api-example
+
+# Build the JAR
 mvn clean package
 
-# To run the JAR code
+# Submit the Flink job
 java -jar flink-table-api-java-examples-1.0.jar
-
 ```
 
-The above commands will submit the Flink Job to the CC Flink compute pool and you can observe the statements on the compute pool.
+The job will be submitted to the Confluent Cloud Flink compute pool using Confluent flink plugin through REST endpoint, and you can monitor its execution directly from the Confluent Cloud UI.
 
-## Teardown Resources
-Once you have completed the setup you can delete all the resources in one go through terraform.
 
-Navigate to `terraform` directory and run `terraform destroy` command.
+## 🧹 Teardown (Clean Up Resources)
+
+To delete all provisioned resources, run:
+```
+cd terraform
+
+terraform destroy
+```
+This ensures no unnecessary cloud resources continue running.
