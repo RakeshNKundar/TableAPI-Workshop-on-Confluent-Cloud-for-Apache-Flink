@@ -113,7 +113,7 @@
               <transformers>
                 <transformer />
                 <transformer>
-                  <mainClass>io.confluent.flink.examples.table.Example_00_HelloWorld</mainClass>
+                  <mainClass>org.example.Main</mainClass>
                 </transformer>
               </transformers>
             </configuration>

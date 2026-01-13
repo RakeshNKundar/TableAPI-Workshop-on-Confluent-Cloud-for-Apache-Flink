@@ -46,7 +46,7 @@ Clone this github repository to your working directory. Set the working path to 
 ```
 git clone https://github.com/RakeshNKundar/TableAPI-Workshop-on-Confluent-Cloud-for-Apache-Flink.git
 
-cd cc-flink-table-api-workshop
+cd TableAPI-Workshop-on-Confluent-Cloud-for-Apache-Flink
 ```
 
 ## 🔐 Step 1: Generate a Confluent Cloud API Key
@@ -82,9 +82,12 @@ This project uses the **Confluent Terraform Provider**, which requires a special
 
 ## 🧱 Step 2: Provision Confluent Cloud Infrastructure with Terraform
 
-Navigate to the **terraform** directory and run the following commands.
+All the terraform scripts to provision Confluent Cloud resources are available under the **terraform** directory. Run the following commands to set up the infrastructure.
 
 ```
+# Switch to terraform directory
+cd terraform
+
 # Initialize the terraform directory
 terraform init
 
@@ -96,10 +99,14 @@ When prompted, enter:
 - **CC_CLOUD_API_KEY**
 - **CC_CLOUD_API_SECRET**
 
+**NOTE** : It would take around 5 minutes for terraform to provision all resources on Confluent Cloud.
+
 Once the terraform completes its execution, following resources are created automatically.
 - Confluent Environment named `CC_Flink_TableAPI_Workshop`
 - Confluent Kafka Cluster named `Table_API_Workshop_Kafka_Cluster`
 - Flink Compute Pool named `Flink_compute_pool`
+
+**NOTE** : Save the terraform output which will be used while running Java TableAPI code
 
 ## ▶️ Step 3: Run the Java Flink Table API Job
 
@@ -128,6 +135,15 @@ Using sample `marketplace` data provided by Confluent Cloud, the job:
     - Joins `ORDERS` with `PRODUCTS`
     - Produces `orders_product_enriched` table for downstream consumers
 
+### Update the `ccloud.properties` file with necessary Confluent Cloud details
+
+Fill in the details for the below config properties by grabbing it from the terraform output.
+- client.organization-id
+- client.environment-id
+- client.compute-pool-id
+- client.flink-api-key
+- client.flink-api-secret : To obatin the flink api secret, search for `flink_api_secret` in the `terraform.tfstate` file in the terraform directory.
+
 ### Build and Run the Job
 ```
 cd flink-table-api-example
@@ -136,7 +152,7 @@ cd flink-table-api-example
 mvn clean package
 
 # Submit the Flink job
-java -jar flink-table-api-java-examples-1.0.jar
+java -jar ./target/flink-table-api-java-examples-1.0.jar
 ```
 
 The job will be submitted to the Confluent Cloud Flink compute pool using Confluent flink plugin through REST endpoint, and you can monitor its execution directly from the Confluent Cloud UI.
@@ -148,6 +164,6 @@ To delete all provisioned resources, run:
 ```
 cd terraform
 
-terraform destroy
+terraform destroy --auto-approve
 ```
 This ensures no unnecessary cloud resources continue running.

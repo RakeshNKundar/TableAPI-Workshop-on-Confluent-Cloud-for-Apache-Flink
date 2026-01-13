@@ -8,11 +8,6 @@ resource "confluent_environment" "cc_flink_tableapi_workshop" {
   }
 }
 
-data "confluent_schema_registry_cluster" "cc_flink_tableapi_workshop_sr" {
-  environment {
-    id = confluent_environment.cc_flink_tableapi_workshop.id
-  }
-}
 
 resource "confluent_kafka_cluster" "flink_tableapi_demo_cluster" {
   display_name = "Table_API_Workshop_Kafka_Cluster"
@@ -25,6 +20,14 @@ resource "confluent_kafka_cluster" "flink_tableapi_demo_cluster" {
   environment {
     id = confluent_environment.cc_flink_tableapi_workshop.id
   }
+}
+
+data "confluent_schema_registry_cluster" "cc_flink_tableapi_workshop_sr" {
+  environment {
+    id = confluent_environment.cc_flink_tableapi_workshop.id
+  }
+
+  depends_on = [ confluent_kafka_cluster.flink_tableapi_demo_cluster]
 }
 
 resource "confluent_service_account" "flink_tableapi_sa" {

@@ -53,6 +53,9 @@ public class Main {
             env.createTable(ordersFilteredTableName, ordersFileterdTableDescriptor);
         }
 
+        String filteredStatementName = "orders-filtered-insert-v1" + UUID.randomUUID();
+        env.getConfig().set("client.statement-name", filteredStatementName);
+
         TableResult ordersFileterdTable =
                 env.from("examples.marketplace.orders")
                         .where($("customer_id").between(3000, 4000))
@@ -82,6 +85,10 @@ public class Main {
         if (!tableList.contains(ordersWindowedAggregationTableName)) {
             env.createTable(ordersWindowedAggregationTableName, ordersWindowedCountTableDescriptor);
         }
+
+        String windowedAggregationStatementName =
+                "orders-windowed-aggregation-insert-v1" + UUID.randomUUID();
+        env.getConfig().set("client.statement-name", windowedAggregationStatementName);
 
         TableResult ordersWindowedCountTable =
                 env.from("examples.marketplace.orders")
@@ -123,24 +130,26 @@ public class Main {
             env.createTable(ordersProductEnrichedTableName, ordersProductEnrichedTableDescriptor);
         }
 
-        //        StatementSet stmtSet = env.createStatementSet();
+        String productsEnrichmentStatementName =
+                "orders-product-enrichment-insert-v1" + UUID.randomUUID();
+        env.getConfig().set("client.statement-name", productsEnrichmentStatementName);
 
         TableResult ordersProductEnrichedTable =
                 env.executeSql(
                         """
-                        INSERT INTO orders_product_enriched
-                        SELECT
-                            o.product_id,
-                            o.order_id,
-                            o.customer_id,
-                            p.name as product_name,
-                            p.brand as product_brand,
-                            p.vendor as product_vendor,
-                            o.price
-                        FROM `examples`.`marketplace`.`orders` AS o
-                        LEFT JOIN `examples`.`marketplace`.`products`
-                        FOR SYSTEM_TIME AS OF o.`$rowtime` AS p
-                        ON o.product_id = p.product_id;
-                        """);
+                                INSERT INTO orders_product_enriched
+                                SELECT
+                                    o.product_id,
+                                    o.order_id,
+                                    o.customer_id,
+                                    p.name as product_name,
+                                    p.brand as product_brand,
+                                    p.vendor as product_vendor,
+                                    o.price
+                                FROM `examples`.`marketplace`.`orders` AS o
+                                LEFT JOIN `examples`.`marketplace`.`products`
+                                FOR SYSTEM_TIME AS OF o.`$rowtime` AS p
+                                ON o.product_id = p.product_id;
+                                """);
     }
 }
