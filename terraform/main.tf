@@ -1,7 +1,7 @@
 data "confluent_organization" "cc_organization" {}
 
 resource "confluent_environment" "cc_flink_tableapi_workshop" {
-  display_name = "CC_Flink_TableAPI_Workshop"
+  display_name = "TableAPI_Workshop_${random_string.resource_suffix.id}"
 
   stream_governance {
     package = "ESSENTIALS"
@@ -10,7 +10,7 @@ resource "confluent_environment" "cc_flink_tableapi_workshop" {
 
 
 resource "confluent_kafka_cluster" "flink_tableapi_demo_cluster" {
-  display_name = "Table_API_Workshop_Kafka_Cluster"
+  display_name = "Kafka_Cluster_${random_string.resource_suffix.id}"
   availability = "SINGLE_ZONE"
   cloud        = var.CLOUD_PROVIDER
   region       = var.REGION
@@ -31,7 +31,7 @@ data "confluent_schema_registry_cluster" "cc_flink_tableapi_workshop_sr" {
 }
 
 resource "confluent_service_account" "flink_tableapi_sa" {
-  display_name = "flink_tableapi_SA"
+  display_name = "flink_tableapi_SA_${random_string.resource_suffix.id}"
   description  = "Service Account for CC Flink TableAPI Workshop"
 }
 
@@ -45,7 +45,7 @@ resource "confluent_role_binding" "flink_tableapi_sa_cluster_admin_rb" {
 
 
 resource "confluent_api_key" "flink_tableapi_workshop_kafka_api_key" {
-  display_name = "CC_Flink_TableAPI_Workshop_API_Key"
+  display_name = "CC_Flink_TableAPI_Workshop_API_Key_${random_string.resource_suffix.id}"
   description  = "API Key for Table API Workshop Kafka Cluste with CloudClusterAdmin RBAC"
   owner {
     id          = confluent_service_account.flink_tableapi_sa.id
@@ -67,7 +67,7 @@ resource "confluent_api_key" "flink_tableapi_workshop_kafka_api_key" {
 }
 
 resource "confluent_service_account" "flink_sa" {
-  display_name = "Flink_SA"
+  display_name = "Flink_SA_${random_string.resource_suffix.id}"
   description  = "Service account for Flink Compute pool access"
 }
 
@@ -91,7 +91,7 @@ resource "confluent_role_binding" "schema_registry_all_subjects" {
 
 
 resource "confluent_api_key" "flink_api_key" {
-  display_name = "flink-api-key"
+  display_name = "flink-api-key_${random_string.resource_suffix.id}"
 
   owner {
     id          = confluent_service_account.flink_sa.id

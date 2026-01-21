@@ -15,3 +15,9 @@ provider "confluent" {
   cloud_api_secret = var.CC_CLOUD_API_SECRET # optionally use CONFLUENT_CLOUD_API_SECRET env var
 
 }
+
+resource "random_string" "resource_suffix" {
+  length  = 4
+  upper   = false
+  special = false
+}

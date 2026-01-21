@@ -102,9 +102,9 @@ When prompted, enter:
 **NOTE** : It would take around 5 minutes for terraform to provision all resources on Confluent Cloud.
 
 Once the terraform completes its execution, following resources are created automatically.
-- Confluent Environment named `CC_Flink_TableAPI_Workshop`
-- Confluent Kafka Cluster named `Table_API_Workshop_Kafka_Cluster`
-- Flink Compute Pool named `Flink_compute_pool`
+- Confluent Environment named `TableAPI_Workshop_{random_suffix}`
+- Confluent Kafka Cluster named `Kafka_Cluster_{random_suffix}`
+- Flink Compute Pool named `Flink_compute_pool_{random_suffix}`
 
 **NOTE** : Save the terraform output which will be used while running Java TableAPI code
 
@@ -117,7 +117,7 @@ The directory **flink-table-api-example** contains a Maven-based Java project th
 - `confluent-flink-table-api-java-plugin` : Confluent's Table API java plugin used to interact with Flink compute pool created on Confluent Cloud using REST endpoints.
 
 ### What the Flink Job Does
-Using sample `marketplace` data provided by Confluent Cloud, the job:
+Using Confluent Cloud Flink's built-in sample `marketplace` mock data, the job:
 
 1. Filters orders
 
@@ -144,6 +144,12 @@ Fill in the details for the below config properties by grabbing it from the terr
 - client.flink-api-key
 - client.flink-api-secret : To obatin the flink api secret, search for `flink_api_secret` in the `terraform.tfstate` file in the terraform directory.
 
+### Similarly, Update the `application.properties` file with necessary Confluent Cloud details
+- environment-name
+- kafka-cluster-name
+
+This details can be found in the terraform output.
+
 ### Build and Run the Job
 ```
 cd flink-table-api-example
@@ -156,6 +162,8 @@ java -jar ./target/flink-table-api-java-examples-1.0.jar
 ```
 
 The job will be submitted to the Confluent Cloud Flink compute pool using Confluent flink plugin through REST endpoint, and you can monitor its execution directly from the Confluent Cloud UI.
+
+**Note**: It may take a 1 minute or 2 for the above command to run completely as Flink takes the job graph, allocates the necessary resources and once the Job is started, A response is returned to the Java client.
 
 
 ## 🧹 Teardown (Clean Up Resources)

@@ -4,18 +4,38 @@ import io.confluent.flink.plugin.*;
 
 import org.apache.flink.table.api.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.util.Properties;
 
 import static org.apache.flink.table.api.DataTypes.*;
 import static org.apache.flink.table.api.Expressions.*;
 
 public class Main {
     public static void main(String[] args) {
+
+        // Load the ccloud.properties file
+        Properties props = new Properties();
+
+        try (InputStream input =
+                Main.class.getClassLoader().getResourceAsStream("application.properties")) {
+
+            if (input == null) {
+                throw new RuntimeException("application.properties not found");
+            }
+
+            props.load(input);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load properties file", e);
+        }
+
         // Fill this with the Environment name on your Confluent Cloud
-        final String TARGET_CATALOG = "CC_Flink_TableAPI_Workshop";
+        final String TARGET_CATALOG = props.getProperty("environment-name");
 
         // Fill this with a Kafka cluster you have write access to
-        final String TARGET_DATABASE = "Table_API_Workshop_Kafka_Cluster";
+        final String TARGET_DATABASE = props.getProperty("kafka-cluster-name");
 
         EnvironmentSettings settings = ConfluentSettings.fromResource("/ccloud.properties");
         TableEnvironment env = TableEnvironment.create(settings);

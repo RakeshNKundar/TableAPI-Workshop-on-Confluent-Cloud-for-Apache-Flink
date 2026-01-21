@@ -28,3 +28,13 @@ output "flink_api_secret" {
   value       = confluent_api_key.flink_api_key.secret
   sensitive   = true
 }
+
+output "environment_name" {
+  description = "Confluent Cloud Environment Name"
+  value       = confluent_environment.cc_flink_tableapi_workshop.display_name
+}
+
+output "kafka_cluster_name" {
+  description = "Confluent Cloud Kafka Cluster Name"
+  value       = confluent_kafka_cluster.flink_tableapi_demo_cluster.display_name
+}
